@@ -39,15 +39,15 @@ export class MockTodoService extends TodoService {
     super(null);
   }
 
-  getTodos(filters: { owner?: string; status?: boolean; body?: string; category?: string }): Observable<Todo[]> {
-    // Just return the test users regardless of what filters are passed in
+  getTodos(): Observable<Todo[]> {
+    // Just return the test todos regardless of what filters are passed in
     return of(MockTodoService.testTodos);
   }
 
-  getTodosById(id: string): Observable<Todo> {
-    // If the specified ID is for the first test user,
+  getTodoById(id: string): Observable<Todo> {
+    // If the specified ID is for the first test todo,
     // return that user, otherwise return `null` so
-    // we can test illegal user requests.
+    // we can test illegal todo requests.
     if (id === MockTodoService.testTodos[0]._id) {
       return of(MockTodoService.testTodos[0]);
     } else {

@@ -8,13 +8,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './todo-profile.component.html',
   styleUrls: ['./todo-profile.component.scss']
 })
-export class TodoProfileComponent implements OnInit,OnDestroy {
+export class TodoProfileComponent implements OnInit, OnDestroy {
+
   todo: Todo;
   id: string;
   getTodoSub: Subscription;
 
   constructor(private route: ActivatedRoute, private todoService: TodoService) { }
-
 
   ngOnInit(): void {
     // We subscribe to the parameter map here so we'll be notified whenever
@@ -36,3 +36,4 @@ export class TodoProfileComponent implements OnInit,OnDestroy {
   }
 
 }
+

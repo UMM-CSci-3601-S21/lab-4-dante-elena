@@ -162,7 +162,8 @@ describe('Todo service: ', () => {
 
   it('getTodos() calls api/todos with multiple filter parameters', () => {
 
-    todoService.getTodos({ owner: 'Jesse', status: false, body: 'commodo consequat est deserunt', category: 'groceries' }).subscribe(
+    todoService.getTodos({ owner: 'Barry', status: true, body: 'Adipisicing ea eu adipisicing esse ullamco',
+    category: 'software design' }).subscribe(
       todos => expect(todos).toBe(testTodos)
     );
 
@@ -177,10 +178,10 @@ describe('Todo service: ', () => {
     expect(req.request.method).toEqual('GET');
 
     // Check that the role parameters are correct
-    expect(req.request.params.get('owner')).toEqual('Jesse');
-    expect(req.request.params.get('status')).toEqual('false');
-    expect(req.request.params.get('body')).toEqual('commodo consequat est deserunt');
-    expect(req.request.params.get('category')).toEqual('groceries');
+    expect(req.request.params.get('owner')).toEqual('Barry');
+    expect(req.request.params.get('status')).toEqual('true');
+    expect(req.request.params.get('body')).toEqual('Adipisicing ea eu adipisicing esse ullamco');
+    expect(req.request.params.get('category')).toEqual('software design');
 
     req.flush(testTodos);
   });
@@ -206,15 +207,15 @@ describe('Todo service: ', () => {
 
   it('filterTodos() filters by status', () => {
     expect(testTodos.length).toBe(3);
-    const todoStatus = false;
-    expect(todoService.filterTodos(testTodos, { status: todoStatus }).length).toBe(1);
+    const todoStatus = true;
+    expect(todoService.filterTodos(testTodos, { status: todoStatus }).length).toBe(2);
   });
 
   it('filterTodos() filters by owner and status', () => {
     expect(testTodos.length).toBe(3);
     const todoOwner = 'Barry';
-    const todoStatus = false;
-    expect(todoService.filterTodos(testTodos, { owner: todoOwner, status: todoStatus }).length).toBe(0);
+    const todoStatus = true;
+    expect(todoService.filterTodos(testTodos, { owner: todoOwner, status: todoStatus }).length).toBe(2);
   });
 
   it('addTodo() posts to api/todos', () => {
