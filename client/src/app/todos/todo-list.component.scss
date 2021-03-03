@@ -1,0 +1,24 @@
+.todos-list-item {
+  width: 100%;
+  position: relative;
+  border-style: ridge;
+  border-color: rgb(73, 5, 90);
+  margin-bottom: 10px;
+}
+ p{
+  white-space: normal;
+  word-wrap: normal;
+  width: 70vw;
+}
+
+div{
+  margin-bottom: 10px;
+}
+
+.add-todo-fab {
+  position: fixed;
+  bottom: 15px;
+  right: 30px;
+  color: rgb(243, 243, 243);
+  background-color: rgb(73, 5, 90);
+}

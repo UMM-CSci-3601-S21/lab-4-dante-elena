@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MongoSpec {
 
   private MongoCollection<Document> userDocuments;
+  private MongoCollection<Document> todoDocuments;
 
   static MongoClient mongoClient;
   static MongoDatabase db;
@@ -66,8 +67,11 @@ public class MongoSpec {
   @BeforeEach
   public void clearAndPopulateDB() {
     userDocuments = db.getCollection("users");
+    todoDocuments = db.getCollection("todos");
     userDocuments.drop();
+    todoDocuments.drop();
     List<Document> testUsers = new ArrayList<>();
+    List<Document> testTodos = new ArrayList<>();
     testUsers.add(
       new Document()
         .append("name", "Chris")
@@ -87,7 +91,27 @@ public class MongoSpec {
         .append("company", "Frogs, Inc.")
         .append("email", "jamie@frogs.com"));
 
+     testTodos.add(
+      new Document()
+          .append("owner", "Chris")
+          .append("status", false)
+          .append("category", "places")
+          .append("body", "hello this is english"));
+    testTodos.add(
+      new Document()
+          .append("owner", "Mat")
+          .append("status", true)
+          .append("category", "home")
+          .append("body", "this isnt english"));
+    testTodos.add(
+      new Document()
+          .append("owner", "Ciara")
+          .append("status", false)
+          .append("category", "away")
+          .append("body", "the body lies"));
+
     userDocuments.insertMany(testUsers);
+    todoDocuments.insertMany(testTodos);
   }
 
   private List<Document> intoList(MongoIterable<Document> documents) {
@@ -96,9 +120,22 @@ public class MongoSpec {
     return users;
   }
 
+  private List<Document> intoListTodos(MongoIterable<Document> document) {
+    List<Document> todos = new ArrayList<>();
+    document.into(todos);
+    return todos;
+  }
+
+
+
+
   private int countUsers(FindIterable<Document> documents) {
     List<Document> users = intoList(documents);
     return users.size();
+  }
+  private int countTodos(FindIterable<Document> document) {
+    List<Document> todos = intoList(document);
+    return todos.size();
   }
 
   @Test
@@ -109,10 +146,23 @@ public class MongoSpec {
   }
 
   @Test
+  public void shouldBeThreeTodos() {
+    FindIterable<Document> documents = todoDocuments.find();
+    int numberOfTodos = countTodos(documents);
+    assertEquals(3, numberOfTodos, "Should be 3 total todos");
+  }
+
+  @Test
   public void shouldBeOneChris() {
     FindIterable<Document> documents = userDocuments.find(eq("name", "Chris"));
     int numberOfUsers = countUsers(documents);
     assertEquals(1, numberOfUsers, "Should be 1 Chris");
+  }
+  @Test
+  public void shouldBeOneMat() {
+    FindIterable<Document> documents = todoDocuments.find(eq("owner", "Mat"));
+    int numberOfTodos = countTodos(documents);
+    assertEquals(1, numberOfTodos, "Should be 1 Mat");
   }
 
   @Test
@@ -120,6 +170,28 @@ public class MongoSpec {
     FindIterable<Document> documents = userDocuments.find(gt("age", 25));
     int numberOfUsers = countUsers(documents);
     assertEquals(2, numberOfUsers, "Should be 2 over 25");
+  }
+
+
+  @Test
+  public void shouldBeTwoFalse() {
+    FindIterable<Document> documents = todoDocuments.find(eq("status", false));
+    int numberOfTodos = countTodos(documents);
+    assertEquals(2, numberOfTodos, "Should be 2 false");
+  }
+
+  @Test
+  public void shouldBeOneHome() {
+    FindIterable<Document> documents = todoDocuments.find(eq("category", "home"));
+    int numberOfTodos = countTodos(documents);
+    assertEquals(1, numberOfTodos, "Should be 1 home");
+  }
+
+  @Test
+  public void shouldBeNoBody() {
+    FindIterable<Document> documents = todoDocuments.find(eq("body", "hello my name is dante miller from south dakota"));
+    int numberOfTodos = countTodos(documents);
+    assertEquals(0, numberOfTodos, "Should be 0 body");
   }
 
   @Test
