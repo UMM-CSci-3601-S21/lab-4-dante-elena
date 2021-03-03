@@ -1,234 +1,164 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, FormGroup, AbstractControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { Todo} from './todo';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MockTodoService } from 'src/testing/todo.service.mock';
+import { AddTodoComponent } from './add-todo.component';
 import { TodoService } from './todo.service';
 
-describe('Todo service: ', () => {
-  // A small collection of test users
+describe('AddTodoComponent', () => {
+  let addTodoComponent: AddTodoComponent;
+  let addTodoForm: FormGroup;
+  let fixture: ComponentFixture<AddTodoComponent>;
 
-
-  const testTodos: Todo[] = [
-    {
-      _id: '3434id',
-      owner: 'Barry',
-      status: true,
-      body: 'nostrud esse voluptate occaecat',
-      category: 'software design'
-    },
-    {
-      _id: '6554id',
-      owner: 'Barry',
-      status: true,
-      body: 'Adipisicing ea eu adipisicing esse ullamco',
-      category: 'software design'
-    },
-    {
-      _id: '32232id',
-      owner: 'Jesse',
-      status: false,
-      body: 'commodo consequat est deserunt',
-      category: 'groceries'
-    }
-  ];
-
-
-  let todoService: TodoService;
-  // These are used to mock the HTTP requests so that we (a) don't have to
-  // have the server running and (b) we can check exactly which HTTP
-  // requests were made to ensure that we're making the correct requests.
-  let httpClient: HttpClient;
-  let httpTestingController: HttpTestingController;
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatSnackBarModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatInputModule,
+        BrowserAnimationsModule,
+        RouterTestingModule
+      ],
+      declarations: [AddTodoComponent],
+      providers: [{ provide: TodoService, useValue: new MockTodoService() }]
+    }).compileComponents().catch(error => {
+      expect(error).toBeNull();
+    });
+  }));
 
   beforeEach(() => {
-    // Set up the mock handling of the HTTP requests
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
+    fixture = TestBed.createComponent(AddTodoComponent);
+    addTodoComponent = fixture.componentInstance;
+    addTodoComponent.ngOnInit();
+    fixture.detectChanges();
+    addTodoForm = addTodoComponent.addTodosForm;
+    expect(addTodoForm).toBeDefined();
+    expect(addTodoForm.controls).toBeDefined();
+  });
+
+  // Not terribly important; if the component doesn't create
+  // successfully that will probably blow up a lot of things.
+  // Including it, though, does give us confidence that our
+  // our component definitions don't have errors that would
+  // prevent them from being successfully constructed.
+  it('should create the component and form', () => {
+    expect(addTodoComponent).toBeTruthy();
+    expect(addTodoForm).toBeTruthy();
+  });
+
+  // Confirms that an initial, empty form is *not* valid, so
+  // people can't submit an empty form.
+  it('form should be invalid when empty', () => {
+    expect(addTodoForm.valid).toBeFalsy();
+  });
+
+  describe('The owner field', () => {
+    let ownerControl: AbstractControl;
+
+    beforeEach(() => {
+      ownerControl = addTodoComponent.addTodosForm.controls.owner;
     });
-    httpClient = TestBed.inject(HttpClient);
-    httpTestingController = TestBed.inject(HttpTestingController);
-    // Construct an instance of the service with the mock
-    // HTTP client.
-    todoService = new TodoService(httpClient);
+
+    it('should not allow empty owner', () => {
+      ownerControl.setValue('');
+      expect(ownerControl.valid).toBeFalsy();
+    });
+
+    it('should be fine with "Chris Smith"', () => {
+      ownerControl.setValue('Chris Smith');
+      expect(ownerControl.valid).toBeTruthy();
+    });
+
+    it('should fail on single character owner', () => {
+      ownerControl.setValue('x');
+      expect(ownerControl.valid).toBeFalsy();
+      // Annoyingly, Angular uses lowercase 'l' here
+      // when it's an upper case 'L' in `Validators.minLength(2)`.
+      expect(ownerControl.hasError('minlength')).toBeTruthy();
+    });
+
+    // In the real world, you'd want to be pretty careful about
+    // setting upper limits on things like name lengths just
+    // because there are people with really long names.
+    it('should fail on really long owners', () => {
+      ownerControl.setValue('x'.repeat(500));
+      expect(ownerControl.valid).toBeFalsy();
+      // Annoyingly, Angular uses lowercase 'l' here
+      // when it's an upper case 'L' in `Validators.maxLength(2)`.
+      expect(ownerControl.hasError('maxlength')).toBeTruthy();
+    });
+
+    it('should allow digits in the owner', () => {
+      ownerControl.setValue('Bad2Th3B0ne');
+      expect(ownerControl.valid).toBeTruthy();
+    });
+
+  describe('The status field', () => {
+    let statusControl: AbstractControl;
+
+    beforeEach(() => {
+      statusControl = addTodoComponent.addTodosForm.controls.status;
+    });
+
+    it('should not allow empty status', () => {
+      statusControl.setValue('');
+      expect(statusControl.valid).toBeFalsy();
+    });
+
+    it('should be fine with "true"', () => {
+      statusControl.setValue(true);
+      expect(statusControl.valid).toBeTruthy();
+    });
+  });
   });
 
-  afterEach(() => {
-    // After every test, assert that there are no more pending requests.
-    httpTestingController.verify();
+  describe('The category field', () => {
+    let categoryControl: AbstractControl;
+
+    beforeEach(() => {
+      categoryControl = addTodoComponent.addTodosForm.controls.category;
+    });
+
+    it('should not allow empty values', () => {
+      categoryControl.setValue('');
+      expect(categoryControl.valid).toBeFalsy();
+      expect(categoryControl.hasError('required')).toBeTruthy();
+    });
+
+    it('should accept legal categorys', () => {
+      categoryControl.setValue('LOCATION');
+      expect(categoryControl.valid).toBeTruthy();
+    });
+
   });
 
-  it('getTodos() calls api/todos', () => {
-    // Assert that the users we get from this call to getUsers()
-    // should be our set of test users. Because we're subscribing
-    // to the result of getUsers(), this won't actually get
-    // checked until the mocked HTTP request 'returns' a response.
-    // This happens when we call req.flush(testTodos) a few lines
-    // down.
-    todoService.getTodos().subscribe(
-      todos => expect(todos).toBe(testTodos)
-    );
+  describe('The body field', () => {
+    let bodyControl: AbstractControl;
 
-    // Specify that (exactly) one request will be made to the specified URL.
-    const req = httpTestingController.expectOne(todoService.todoUrl);
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-    // Specify the content of the response to that request. This
-    // triggers the subscribe above, which leads to that check
-    // actually being performed.
-    req.flush(testTodos);
-  });
+    beforeEach(() => {
+      bodyControl = addTodoForm.controls.body;
+    });
 
-  it('getTodos() calls api/todos with filter parameter \'owner\'', () => {
-
-    todoService.getTodos({ owner: 'Barry' }).subscribe(
-      todos => expect(todos).toBe(testTodos)
-    );
-
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
-    const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(todoService.todoUrl) && request.params.has('owner')
-    );
-
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-
-    // Check that the role parameter was 'admin'
-    expect(req.request.params.get('owner')).toEqual('Barry');
-
-    req.flush(testTodos);
-  });
-
-  it('getTodos() calls api/todos with filter parameter \'status\'', () => {
-
-    todoService.getTodos({ status: true }).subscribe(
-      todos => expect(todos).toBe(testTodos)
-    );
-
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
-    const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(todoService.todoUrl) && request.params.has('status')
-    );
-
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-
-    // Check that the role parameter was 'admin'
-    expect(req.request.params.get('status')).toEqual('true');
-
-    req.flush(testTodos);
-  });
-
-  it('getTodos() calls api/todos with filter parameter \'category\'', () => {
-
-    todoService.getTodos({ category: 'groceries' }).subscribe(
-      todos => expect(todos).toBe(testTodos)
-    );
-
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
-    const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(todoService.todoUrl) && request.params.has('category')
-    );
-
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-
-    // Check that the role parameter was 'admin'
-    expect(req.request.params.get('category')).toEqual('groceries');
-
-    req.flush(testTodos);
-  });
-
-  it('getTodos() calls api/todos with filter parameter \'body\'', () => {
-
-    todoService.getTodos({ body: 'Adipisicing ea eu adipisicing esse ullamco' }).subscribe(
-      todos => expect(todos).toBe(testTodos)
-    );
-
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
-    const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(todoService.todoUrl) && request.params.has('body')
-    );
-
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-
-    // Check that the role parameter was 'admin'
-    expect(req.request.params.get('body')).toEqual('Adipisicing ea eu adipisicing esse ullamco');
-
-    req.flush(testTodos);
-  });
+    it('should not allow empty values', () => {
+      bodyControl.setValue('');
+      expect(bodyControl.valid).toBeFalsy();
+      expect(bodyControl.hasError('required')).toBeTruthy();
+    });
+    it('should be fine with "came from the town"', () => {
+      bodyControl.setValue('came from the town');
+      expect(bodyControl.valid).toBeTruthy();
+    });
 
 
-  it('getTodos() calls api/todos with multiple filter parameters', () => {
-
-    todoService.getTodos({ owner: 'Barry', status: true, body: 'Adipisicing ea eu adipisicing esse ullamco',
-    category: 'software design' }).subscribe(
-      todos => expect(todos).toBe(testTodos)
-    );
-
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
-    const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(todoService.todoUrl)
-        && request.params.has('owner') && request.params.has('status') && request.params.has('body')
-        && request.params.has('category')
-    );
-
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-
-    // Check that the role parameters are correct
-    expect(req.request.params.get('owner')).toEqual('Barry');
-    expect(req.request.params.get('status')).toEqual('true');
-    expect(req.request.params.get('body')).toEqual('Adipisicing ea eu adipisicing esse ullamco');
-    expect(req.request.params.get('category')).toEqual('software design');
-
-    req.flush(testTodos);
-  });
-
-  it('getUserById() calls api/todos/id', () => {
-    const targetTodo: Todo = testTodos[1];
-    const targetId: string = targetTodo._id;
-    todoService.getTodoById(targetId).subscribe(
-      todo => expect(todo).toBe(targetTodo)
-    );
-
-    const expectedUrl: string = todoService.todoUrl + '/' + targetId;
-    const req = httpTestingController.expectOne(expectedUrl);
-    expect(req.request.method).toEqual('GET');
-    req.flush(targetTodo);
-  });
-
-  it('filterTodos() filters by owner', () => {
-    expect(testTodos.length).toBe(3);
-    const todoOwner = 'Barry';
-    expect(todoService.filterTodos(testTodos, { owner: todoOwner }).length).toBe(2);
-  });
-
-  it('filterTodos() filters by status', () => {
-    expect(testTodos.length).toBe(3);
-    const todoStatus = true;
-    expect(todoService.filterTodos(testTodos, { status: todoStatus }).length).toBe(2);
-  });
-
-  it('filterTodos() filters by owner and status', () => {
-    expect(testTodos.length).toBe(3);
-    const todoOwner = 'Barry';
-    const todoStatus = true;
-    expect(todoService.filterTodos(testTodos, { owner: todoOwner, status: todoStatus }).length).toBe(2);
-  });
-
-  it('addTodo() posts to api/todos', () => {
-
-    todoService.addTodo(testTodos[1]).subscribe(
-      id => expect(id).toBe('testid')
-    );
-
-    const req = httpTestingController.expectOne(todoService.todoUrl);
-
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual(testTodos[1]);
-
-    req.flush({id: 'testid'});
   });
 });

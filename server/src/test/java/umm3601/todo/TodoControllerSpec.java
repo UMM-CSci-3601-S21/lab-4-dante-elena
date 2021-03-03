@@ -251,16 +251,17 @@ public class TodoControllerSpec {
       TodoController.getTodo(ctx);
     });
   }
+  @Test
   public void AddTodo() throws IOException {
 
-    String testNewUser = "{"
+    String testNewTodo = "{"
       + "\"owner\": \"Test\","
       + "\"status\": true,"
       + "\"category\": \"testers\","
       + "\"body\": \"test example com\""
       + "}";
 
-    mockReq.setBodyContent(testNewUser);
+    mockReq.setBodyContent(testNewTodo);
     mockReq.setMethod("POST");
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/todos");
@@ -277,13 +278,106 @@ public class TodoControllerSpec {
     assertEquals(1, db.getCollection("todos").countDocuments(eq("_id", new ObjectId(id))));
 
     //verify user was added to the database and the correct ID
-    Document addedUser = db.getCollection("todos").find(eq("_id", new ObjectId(id))).first();
-    assertNotNull(addedUser);
-    assertEquals("Test", addedUser.getString("owner"));
-    assertEquals("true", addedUser.getString("status"));
-    assertEquals("testers", addedUser.getString("category"));
-    assertEquals("test example com", addedUser.getString("body"));
+    Document addedTodo = db.getCollection("todos").find(eq("_id", new ObjectId(id))).first();
+    assertNotNull(addedTodo);
+    assertEquals("Test", addedTodo.getString("owner"));
+    assertEquals(true, addedTodo.getBoolean("status"));
+    assertEquals("testers", addedTodo.getString("category"));
+    assertEquals("test example com", addedTodo.getString("body"));
   }
+
+
+
+
+
+
+
+  @Test
+  public void AddInvalidOwner() throws IOException {
+
+    String testNewTodo = "{"
+      + "\"owner\": \"\","
+      + "\"status\": true,"
+      + "\"category\": \"testers\","
+      + "\"body\": \"test example com\""
+      + "}";
+    mockReq.setBodyContent(testNewTodo);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/todos");
+
+    assertThrows(BadRequestResponse.class, () -> {
+      TodoController.addNewTodo(ctx);
+    });
+  }
+
+  @Test
+  public void AddInvalidStatus() throws IOException {
+    String testNewTodo = "{"
+    + "\"owner\": \"Test\","
+    + "\"status\": truefalse,"
+    + "\"category\": \"testers\","
+    + "\"body\": \"test example com\""
+    + "}";
+    mockReq.setBodyContent(testNewTodo);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/todos");
+
+    assertThrows(BadRequestResponse.class, () -> {
+      TodoController.addNewTodo(ctx);
+    });
+  }
+
+  @Test
+  public void AddInvalidCategory() throws IOException {
+    String testNewTodo = "{"
+    + "\"owner\": \"Test\","
+    + "\"status\": true,"
+    + "\"category\": \"\","
+    + "\"body\": \"test example com\""
+    + "}";
+    mockReq.setBodyContent(testNewTodo);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/todos");
+
+    assertThrows(BadRequestResponse.class, () -> {
+      TodoController.addNewTodo(ctx);
+    });
+  }
+
+  @Test
+  public void AddInvalidBody() throws IOException {
+    String testNewTodo = "{"
+    + "\"owner\": \"Test\","
+    + "\"status\": true,"
+    + "\"category\": \"dsds\","
+    + "\"body\": \"\""
+    + "}";
+    mockReq.setBodyContent(testNewTodo);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/todos");
+
+    assertThrows(BadRequestResponse.class, () -> {
+      TodoController.addNewTodo(ctx);
+    });
+  }
+
+  @Test
+  public void DeleteTodo() throws IOException {
+
+    String testID = samsId.toHexString();
+
+    // User exists before deletion
+    assertEquals(1, db.getCollection("todos").countDocuments(eq("_id", new ObjectId(testID))));
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/todos/:id", ImmutableMap.of("id", testID));
+    TodoController.deleteTodo(ctx);
+
+    assertEquals(200, mockRes.getStatus());
+
+    // User is no longer in the database
+    assertEquals(0, db.getCollection("todos").countDocuments(eq("_id", new ObjectId(testID))));
+  }
+
 
 
 }
