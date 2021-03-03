@@ -2,7 +2,7 @@
   <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
 
     <mat-card class="search-card">
-      <mat-card-title class="todo-list-title">Todos</mat-card-title>
+      <mat-card-title class="todos-list-title">Todos</mat-card-title>
       <mat-card-content fxLayout="column" >
 
         <div fxLayout="row wrap" fxLayoutGap="10px">
@@ -10,21 +10,21 @@
 
           <mat-form-field class="input-field">
             <mat-label>Owner</mat-label>
-            <input matInput data-test="todoOwnerInput" placeholder="Filter by owner"
+            <input matInput data-test="todosOwnerInput" placeholder="Filter by owner"
             [(ngModel)]="todoOwner" (input)="updateFilter()">
             <mat-hint>Filtered on client</mat-hint>
           </mat-form-field>
 
           <mat-form-field class="input-field">
             <mat-label>Status</mat-label>
-            <input matInput data-test="todoStatusInput" placeholder="Filter by status"
+            <input matInput data-test="todosStatusInput" placeholder="Filter by status"
             [(ngModel)]="todoStatus" (input)="updateFilter()">
             <mat-hint>Filtered on client</mat-hint>
           </mat-form-field>
 
           <mat-form-field class="input-field">
             <mat-label>Body</mat-label>
-            <input matInput data-test="todoBodyInput" placeholder="Filter by body"
+            <input matInput data-test="todosBodyInput" placeholder="Filter by body"
             [(ngModel)]="todoBody" (input)="updateFilter()">
             <mat-hint>Filtered on client</mat-hint>
           </mat-form-field>
@@ -32,14 +32,14 @@
 
           <mat-form-field class="input-field">
             <mat-label>Category</mat-label>
-            <input matInput data-test="todoCategoryInput" placeholder="Filter by category"
+            <input matInput data-test="todosCategoryInput" placeholder="Filter by category"
             [(ngModel)]="todoCategory" (input)="updateFilter()">
             <mat-hint>Filtered on client</mat-hint>
           </mat-form-field>
 
           <mat-form-field class="input-field">
             <mat-label>Limit</mat-label>
-            <input matInput data-test="todoLimitInput" placeholder="choosing limit"
+            <input matInput data-test="todosLimitInput" placeholder="choosing limit"
             [(ngModel)]="todoLimit" (input)="updateFilter()">
             <mat-hint>Choosing Limit</mat-hint>
           </mat-form-field>
