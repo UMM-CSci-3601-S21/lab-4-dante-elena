@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableMap;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
 
