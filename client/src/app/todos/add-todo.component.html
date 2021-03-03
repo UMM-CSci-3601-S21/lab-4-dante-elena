@@ -6,7 +6,7 @@ is potentially helpful and contributed to the shaping of this example -->
     <form [formGroup]="addTodosForm" (ngSubmit)="submitForm();">
     <mat-card class="add-todos-card">
         <mat-card-header>
-          <mat-card-title class="add-todos-title">New Todos</mat-card-title>
+          <mat-card-title class="add-todos-title">New Todo</mat-card-title>
         </mat-card-header>
         <mat-card-content fxLayout="column">
           <mat-form-field>
@@ -70,7 +70,7 @@ is potentially helpful and contributed to the shaping of this example -->
             color="primary"
             [disabled]="!addTodosForm.valid"
             type="submit"
-            data-test="confirmAddTodoButton"
+            data-test="AddTodoButton"
           >
             ADD TODO
           </button>

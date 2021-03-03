@@ -206,6 +206,19 @@ public class MongoSpec {
   }
 
   @Test
+  public void trueSortedByOwner() {
+    FindIterable<Document> documents
+      = todoDocuments.find(eq("status",true))
+      .sort(Sorts.ascending("owner"));
+    List<Document> docs = intoList(documents);
+    assertEquals(1, docs.size(), "Should be 1");
+    assertEquals("Mat", docs.get(0).get("owner"), "First should be Mat ");
+  }
+
+
+
+
+  @Test
   public void over25AndIbmers() {
     FindIterable<Document> documents
       = userDocuments.find(and(gt("age", 25),
@@ -224,6 +237,18 @@ public class MongoSpec {
     assertEquals("Chris", docs.get(0).get("name"), "First should be Chris");
     assertNotNull(docs.get(0).get("email"), "First should have email");
     assertNull(docs.get(0).get("company"), "First shouldn't have 'company'");
+    assertNotNull(docs.get(0).get("_id"), "First should have '_id'");
+  }
+
+  @Test
+  public void justOwnerAndCategory() {
+    FindIterable<Document> documents
+      = todoDocuments.find().projection(fields(include("owner", "category")));
+    List<Document> docs = intoList(documents);
+    assertEquals(3, docs.size(), "Should be 3");
+    assertEquals("Chris", docs.get(0).get("owner"), "First should be Chris");
+    assertNotNull(docs.get(0).get("category"), "First should have email");
+    assertNull(docs.get(0).get("body"), "First shouldn't have 'company'");
     assertNotNull(docs.get(0).get("_id"), "First should have '_id'");
   }
 
