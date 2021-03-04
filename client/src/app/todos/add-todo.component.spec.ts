@@ -55,6 +55,9 @@ describe('AddTodoComponent', () => {
     expect(addTodoComponent).toBeTruthy();
     expect(addTodoForm).toBeTruthy();
   });
+  it('should create', () => {
+    expect(addTodoComponent).toBeTruthy();
+  });
 
   // Confirms that an initial, empty form is *not* valid, so
   // people can't submit an empty form.
@@ -161,4 +164,5 @@ describe('AddTodoComponent', () => {
 
 
   });
-});
+  });
+

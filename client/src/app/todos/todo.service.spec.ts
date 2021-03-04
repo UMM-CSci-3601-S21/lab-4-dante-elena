@@ -180,7 +180,7 @@ describe('Todo service: ', () => {
     expect(req.request.params.get('status')).toEqual('true');
     expect(req.request.params.get('body')).toEqual('nostrud esse voluptate occaecat');
     expect(req.request.params.get('category')).toEqual('software design');
-
+    expect(req.request.params.set('limit','1'));
     req.flush(testTodos);
   });
 
@@ -209,6 +209,18 @@ describe('Todo service: ', () => {
     expect(todoService.filterTodos(testTodos, { status: todoStatus }).length).toBe(2);
   });
 
+  it('filterTodos() filters by category', () => {
+    expect(testTodos.length).toBe(3);
+    const todoCategory = 'groceries';
+    expect(todoService.filterTodos(testTodos, { category: todoCategory }).length).toBe(1);
+  });
+
+  it('filterTodos() filters by body', () => {
+    expect(testTodos.length).toBe(3);
+    const todoBody = 'commodo consequat est deserunt';
+    expect(todoService.filterTodos(testTodos, { body: todoBody }).length).toBe(1);
+  });
+
   it('filterTodos() filters by owner and status', () => {
     expect(testTodos.length).toBe(3);
     const todoOwner = 'Barry';
@@ -228,5 +240,22 @@ describe('Todo service: ', () => {
     expect(req.request.body).toEqual(testTodos[1]);
 
     req.flush({id: 'testid'});
+  });
+
+  it('correctly calls api/todos with filter parameter \'limit\'', () => {
+
+    todoService.getTodos({ limit: 2}).subscribe(
+      todos => expect(todos).toBe(testTodos)
+    );
+
+    const req = httpTestingController.expectOne(
+      (request) => request.url.startsWith(todoService.todoUrl) && request.params.has('limit')
+    );
+
+    expect(req.request.method).toEqual('GET');
+
+    expect(req.request.params.get('limit')).toEqual('2');
+
+    req.flush(testTodos);
   });
 });
