@@ -1,0 +1,81 @@
+<!-- example from
+https://github.com/AngularTemplates/angular-forms-and-validations/blob/master/src/app/form-component/form.component.html
+is potentially helpful and contributed to the shaping of this example -->
+<div fxLayout="row">
+  <div fxFlex fxFlex.gt-sm="80" fxFlexOffset.gt-sm="10">
+    <form [formGroup]="addTodosForm" (ngSubmit)="submitForm();">
+    <mat-card class="add-todos-card">
+        <mat-card-header>
+          <mat-card-title class="add-todos-title">New Todo</mat-card-title>
+        </mat-card-header>
+        <mat-card-content fxLayout="column">
+          <mat-form-field>
+
+
+            <mat-label>Owner</mat-label>
+            <input matInput placeholder="Owner" formControlName="owner"
+                  required>
+            <mat-error *ngFor="let validation of addTodosValidationMessages.owner">
+              <mat-error class="error-message" data-test="ownerError"
+                        *ngIf="addTodosForm.get('owner').hasError(validation.type) && (addTodosForm.get('owner').dirty || addTodosForm.get('owner').touched)">
+                {{validation.message}}
+              </mat-error>
+            </mat-error>
+          </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Status</mat-label>
+          <input matInput placeholder="Status" formControlName="status"
+                required>
+          <mat-error *ngFor="let validation of addTodosValidationMessages.status">
+            <mat-error class="error-message" data-test="statusError"
+                      *ngIf="addTodosForm.get('status').hasError(validation.type) && (addTodosForm.get('status').dirty || addTodosForm.get('status').touched)">
+              {{validation.message}}
+            </mat-error>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Category</mat-label>
+          <input matInput placeholder="Category" formControlName="category"
+                required>
+          <mat-error *ngFor="let validation of addTodosValidationMessages.category">
+            <mat-error class="error-message" data-test="categoryError"
+                      *ngIf="addTodosForm.get('category').hasError(validation.type) && (addTodosForm.get('category').dirty || addTodosForm.get('category').touched)">
+              {{validation.message}}
+            </mat-error>[]
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Body</mat-label>
+          <input matInput placeholder="Body" formControlName="body"
+                required>
+          <mat-error *ngFor="let validation of addTodosValidationMessages.status">
+            <mat-error class="error-message" data-test="bodyError"
+                      *ngIf="addTodosForm.get('body').hasError(validation.type) && (addTodosForm.get('body').dirty || addTodosForm.get('body').touched)">
+              {{validation.message}}
+            </mat-error>
+          </mat-error>
+        </mat-form-field>
+
+
+
+
+        </mat-card-content>
+        <mat-card-actions align ="end">
+          <button
+            mat-button
+            type="button"
+            color="primary"
+            [disabled]="!addTodosForm.valid"
+            type="submit"
+            data-test="AddTodoButton"
+          >
+            ADD TODO
+          </button>
+        </mat-card-actions>
+    </mat-card>
+  </form>
+  </div>
+</div>
