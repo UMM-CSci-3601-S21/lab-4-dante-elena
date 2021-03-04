@@ -28,6 +28,26 @@ describe('Add todo', () => {
   });
 
   it('Should show error messages for invalid inputs', () => {
+    cy.get('[data-test=ownerError]').should('not.exist');
+    page.getFormField('owner').click().blur();
+    cy.get('[data-test=ownerError]').should('exist').and('be.visible');
+
+
+
+    cy.get('[data-test=categoryError]').should('not.exist');
+    page.getFormField('category').click().blur();
+    cy.get('[data-test=ownerError]').should('exist').and('be.visible');
+
+
+    cy.get('[data-test=statusError]').should('not.exist');
+    page.getFormField('status').click().blur();
+    cy.get('[data-test=ownerError]').should('exist').and('be.visible');
+    page.getFormField('status').clear().type('reasonable');
+    cy.get('[data-test=statusError]').should('not.exist');
+
+    cy.get('[data-test=bodyError]').should('not.exist');
+    page.getFormField('body').click().blur();
+    cy.get('[data-test=bodyError]').should('exist').and('be.visible');
 
  });
 

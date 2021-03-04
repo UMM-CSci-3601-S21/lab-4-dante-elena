@@ -28,7 +28,7 @@ is potentially helpful and contributed to the shaping of this example -->
           <input matInput placeholder="Status" formControlName="status"
                 required>
           <mat-error *ngFor="let validation of addTodosValidationMessages.status">
-            <mat-error class="error-message" data-test="ownerError"
+            <mat-error class="error-message" data-test="statusError"
                       *ngIf="addTodosForm.get('status').hasError(validation.type) && (addTodosForm.get('status').dirty || addTodosForm.get('status').touched)">
               {{validation.message}}
             </mat-error>
@@ -40,7 +40,7 @@ is potentially helpful and contributed to the shaping of this example -->
           <input matInput placeholder="Category" formControlName="category"
                 required>
           <mat-error *ngFor="let validation of addTodosValidationMessages.category">
-            <mat-error class="error-message" data-test="ownerError"
+            <mat-error class="error-message" data-test="categoryError"
                       *ngIf="addTodosForm.get('category').hasError(validation.type) && (addTodosForm.get('category').dirty || addTodosForm.get('category').touched)">
               {{validation.message}}
             </mat-error>[]
@@ -52,7 +52,7 @@ is potentially helpful and contributed to the shaping of this example -->
           <input matInput placeholder="Body" formControlName="body"
                 required>
           <mat-error *ngFor="let validation of addTodosValidationMessages.status">
-            <mat-error class="error-message" data-test="ownerError"
+            <mat-error class="error-message" data-test="bodyError"
                       *ngIf="addTodosForm.get('body').hasError(validation.type) && (addTodosForm.get('body').dirty || addTodosForm.get('body').touched)">
               {{validation.message}}
             </mat-error>
